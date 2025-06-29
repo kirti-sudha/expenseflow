@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Plus, Calendar, CreditCard, Tag, DollarSign } from 'lucide-react';
 import { useExpensesDB } from '../hooks/useExpensesDB';
 import { mockCategories } from '../utils/mockData';
+import { parseCurrency } from '../utils/currency';
 
 const ExpenseForm: React.FC = () => {
   const { addTransaction } = useExpensesDB();
@@ -24,8 +25,9 @@ const ExpenseForm: React.FC = () => {
 
     setIsSubmitting(true);
     
+    const amount = parseCurrency(formData.amount);
     const transaction = {
-      amount: formData.type === 'expense' ? -Math.abs(parseFloat(formData.amount)) : parseFloat(formData.amount),
+      amount: formData.type === 'expense' ? -Math.abs(amount) : amount,
       category: formData.category,
       description: formData.description,
       date: formData.date,
