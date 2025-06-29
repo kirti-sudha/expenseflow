@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Plus, Calendar, CreditCard, Tag, DollarSign } from 'lucide-react';
-import { useExpenses } from '../hooks/useExpenses';
+import { useExpensesDB } from '../hooks/useExpensesDB';
 import { mockCategories } from '../utils/mockData';
 
 const ExpenseForm: React.FC = () => {
-  const { addTransaction } = useExpenses();
+  const { addTransaction } = useExpensesDB();
   const [formData, setFormData] = useState({
     amount: '',
     category: '',
@@ -34,10 +34,7 @@ const ExpenseForm: React.FC = () => {
       tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0),
     };
 
-    addTransaction(transaction);
-    
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await addTransaction(transaction);
     
     setIsSubmitting(false);
     setSuccessMessage(`${formData.type === 'expense' ? 'Expense' : 'Income'} added successfully!`);

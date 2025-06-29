@@ -8,12 +8,15 @@ import {
   ArrowDownRight,
   Target,
   Plus,
-  PieChart
+  PieChart,
+  User
 } from 'lucide-react';
-import { useExpenses } from '../hooks/useExpenses';
+import { useExpensesDB } from '../hooks/useExpensesDB';
+import { useAuth } from '../hooks/useAuth';
 
 const Dashboard: React.FC = () => {
-  const { monthlyStats, budgets, transactions, categorySpending, clearAllData } = useExpenses();
+  const { user } = useAuth();
+  const { monthlyStats, budgets, transactions, categorySpending, loading, error } = useExpensesDB();
 
   const recentTransactions = transactions.slice(0, 5);
   
@@ -24,6 +27,35 @@ const Dashboard: React.FC = () => {
 
   const hasData = transactions.length > 0 || budgets.length > 0;
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your financial data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+          <div className="text-red-600 mb-4">⚠️</div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Error Loading Data</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (!hasData) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
@@ -32,6 +64,7 @@ const Dashboard: React.FC = () => {
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Welcome to ExpenseFlow!</h1>
             <p className="text-gray-600 text-lg">Start tracking your expenses and take control of your finances</p>
+            <p className="text-sm text-gray-500 mt-2">Signed in as: {user?.email}</p>
           </div>
 
           {/* Getting Started Cards */}
@@ -145,14 +178,6 @@ const Dashboard: React.FC = () => {
                 ₹{monthlyStats.netIncome.toLocaleString('en-IN')}
               </p>
             </div>
-            {/* Debug: Clear Data Button (remove in production) */}
-            <button
-              onClick={clearAllData}
-              className="text-xs bg-red-100 text-red-600 px-3 py-1 rounded-md hover:bg-red-200 transition-colors"
-              title="Clear all data (for testing)"
-            >
-              Clear Data
-            </button>
           </div>
         </div>
 

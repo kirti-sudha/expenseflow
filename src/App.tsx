@@ -1,13 +1,32 @@
 import React, { useState } from 'react';
+import { useAuth } from './hooks/useAuth';
+import Auth from './components/Auth';
 import Navigation from './components/Navigation';
 import Dashboard from './components/Dashboard';
 import ExpenseForm from './components/ExpenseForm';
 import BudgetOverview from './components/BudgetOverview';
 import TransactionList from './components/TransactionList';
 import GoalsPage from './components/GoalsPage';
+import { LogOut, User } from 'lucide-react';
 
 function App() {
+  const { user, loading, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading ExpenseFlow...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Auth />;
+  }
 
   const renderContent = () => {
     switch (activeTab) {
@@ -24,9 +43,23 @@ function App() {
       case 'settings':
         return (
           <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Settings</h2>
-              <p className="text-gray-600">Settings page coming soon...</p>
+            <div className="text-center bg-white rounded-xl shadow-sm border border-gray-100 p-12">
+              <User className="mx-auto text-gray-400 mb-4" size={48} />
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">User Settings</h2>
+              <p className="text-gray-600 mb-6">Manage your account preferences</p>
+              <div className="space-y-4">
+                <div className="text-left">
+                  <p className="text-sm text-gray-500">Email</p>
+                  <p className="font-medium">{user.email}</p>
+                </div>
+                <button
+                  onClick={() => signOut()}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center"
+                >
+                  <LogOut size={20} className="mr-2" />
+                  Sign Out
+                </button>
+              </div>
             </div>
           </div>
         );
