@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useExpensesDB } from '../hooks/useExpensesDB';
 import { useAuth } from '../hooks/useAuth';
+import { formatIndianCurrency } from '../utils/currency';
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -175,7 +176,7 @@ const Dashboard: React.FC = () => {
             <div className="text-right">
               <p className="text-sm text-gray-500">Net Balance</p>
               <p className={`text-2xl font-bold ${monthlyStats.netIncome >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                ₹{monthlyStats.netIncome.toLocaleString('en-IN')}
+                ₹{formatIndianCurrency(monthlyStats.netIncome, false)}
               </p>
             </div>
           </div>
@@ -188,7 +189,7 @@ const Dashboard: React.FC = () => {
               <div>
                 <p className="text-sm font-medium text-gray-600">Monthly Income</p>
                 <p className="text-2xl font-bold text-green-600 mt-1">
-                  ₹{monthlyStats.totalIncome.toLocaleString('en-IN')}
+                  ₹{formatIndianCurrency(monthlyStats.totalIncome, false)}
                 </p>
               </div>
               <div className="bg-green-100 p-3 rounded-lg">
@@ -202,7 +203,7 @@ const Dashboard: React.FC = () => {
               <div>
                 <p className="text-sm font-medium text-gray-600">Monthly Expenses</p>
                 <p className="text-2xl font-bold text-red-600 mt-1">
-                  ₹{monthlyStats.totalExpenses.toLocaleString('en-IN')}
+                  ₹{formatIndianCurrency(monthlyStats.totalExpenses, false)}
                 </p>
               </div>
               <div className="bg-red-100 p-3 rounded-lg">
@@ -216,7 +217,7 @@ const Dashboard: React.FC = () => {
               <div>
                 <p className="text-sm font-medium text-gray-600">Net Income</p>
                 <p className={`text-2xl font-bold mt-1 ${monthlyStats.netIncome >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  ₹{monthlyStats.netIncome.toLocaleString('en-IN')}
+                  ₹{formatIndianCurrency(monthlyStats.netIncome, false)}
                 </p>
               </div>
               <div className={`p-3 rounded-lg ${monthlyStats.netIncome >= 0 ? 'bg-green-100' : 'bg-red-100'}`}>
@@ -262,7 +263,7 @@ const Dashboard: React.FC = () => {
                       <div className="flex justify-between items-center">
                         <span className="font-medium text-gray-700">{budget.category}</span>
                         <span className="text-sm text-gray-500">
-                          ₹{budget.spent.toFixed(0)} / ₹{budget.amount.toFixed(0)}
+                          ₹{formatIndianCurrency(budget.spent, false)} / ₹{formatIndianCurrency(budget.amount, false)}
                         </span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
@@ -274,7 +275,9 @@ const Dashboard: React.FC = () => {
                         />
                       </div>
                       {isOverBudget && (
-                        <p className="text-xs text-red-600 font-medium">Over budget by ₹{(budget.spent - budget.amount).toFixed(0)}</p>
+                        <p className="text-xs text-red-600 font-medium">
+                          Over budget by ₹{formatIndianCurrency(budget.spent - budget.amount, false)}
+                        </p>
                       )}
                     </div>
                   );
@@ -322,7 +325,7 @@ const Dashboard: React.FC = () => {
                       <p className={`font-semibold ${
                         transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
                       }`}>
-                        {transaction.type === 'income' ? '+' : ''}₹{Math.abs(transaction.amount).toFixed(0)}
+                        {transaction.type === 'income' ? '+' : ''}₹{formatIndianCurrency(Math.abs(transaction.amount), false)}
                       </p>
                       <p className="text-xs text-gray-500">{new Date(transaction.date).toLocaleDateString('en-IN')}</p>
                     </div>
@@ -342,7 +345,7 @@ const Dashboard: React.FC = () => {
                 const percentage = (budget.spent / budget.amount) * 100;
                 return (
                   <p key={budget.id} className="text-yellow-700">
-                    You've spent {percentage.toFixed(0)}% of your {budget.category} budget (₹{budget.spent.toFixed(0)} / ₹{budget.amount.toFixed(0)})
+                    You've spent {percentage.toFixed(0)}% of your {budget.category} budget (₹{formatIndianCurrency(budget.spent, false)} / ₹{formatIndianCurrency(budget.amount, false)})
                   </p>
                 );
               })}
@@ -361,7 +364,7 @@ const Dashboard: React.FC = () => {
                 .map(([category, amount]) => (
                   <div key={category} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <span className="font-medium text-gray-700">{category}</span>
-                    <span className="font-bold text-red-600">₹{amount.toFixed(0)}</span>
+                    <span className="font-bold text-red-600">₹{formatIndianCurrency(amount, false)}</span>
                   </div>
                 ))}
             </div>
