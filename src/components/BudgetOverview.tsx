@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Target, Edit3, AlertTriangle, TrendingUp, Plus, Trash2, X } from 'lucide-react';
-import { useExpenses } from '../hooks/useExpenses';
+import { useExpensesDB } from '../hooks/useExpensesDB';
 import { mockCategories } from '../utils/mockData';
 
 const BudgetOverview: React.FC = () => {
-  const { budgets, addBudget, updateBudget, deleteBudget, categorySpending } = useExpenses();
+  const { budgets, addBudget, updateBudget, deleteBudget, categorySpending, loading, error } = useExpensesDB();
   const [editingBudget, setEditingBudget] = useState<string | null>(null);
   const [editAmount, setEditAmount] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
@@ -14,15 +14,44 @@ const BudgetOverview: React.FC = () => {
     period: 'monthly' as 'monthly' | 'weekly'
   });
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading budgets...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+          <div className="text-red-600 mb-4">⚠️</div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Error Loading Budgets</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const handleEditStart = (budgetId: string, currentAmount: number) => {
     setEditingBudget(budgetId);
     setEditAmount(currentAmount.toString());
   };
 
-  const handleEditSave = (budgetId: string) => {
+  const handleEditSave = async (budgetId: string) => {
     const newAmount = parseFloat(editAmount);
     if (newAmount > 0) {
-      updateBudget(budgetId, newAmount);
+      await updateBudget(budgetId, newAmount);
     }
     setEditingBudget(null);
     setEditAmount('');
@@ -33,11 +62,11 @@ const BudgetOverview: React.FC = () => {
     setEditAmount('');
   };
 
-  const handleAddBudget = (e: React.FormEvent) => {
+  const handleAddBudget = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newBudget.category && newBudget.amount) {
       const category = mockCategories.find(cat => cat.name === newBudget.category);
-      addBudget({
+      await addBudget({
         category: newBudget.category,
         amount: parseFloat(newBudget.amount),
         period: newBudget.period,
@@ -48,9 +77,9 @@ const BudgetOverview: React.FC = () => {
     }
   };
 
-  const handleDeleteBudget = (budgetId: string) => {
+  const handleDeleteBudget = async (budgetId: string) => {
     if (confirm('Are you sure you want to delete this budget?')) {
-      deleteBudget(budgetId);
+      await deleteBudget(budgetId);
     }
   };
 
