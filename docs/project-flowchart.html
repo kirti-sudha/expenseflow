@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExpenseFlow - Project Architecture & Tech Stack</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 25px;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+
+        .flowchart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .layer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .box {
+            background: white;
+            border: 3px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            min-width: 200px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .box.frontend {
+            border-color: #3b82f6;
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        }
+
+        .box.backend {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        }
+
+        .box.database {
+            border-color: #f59e0b;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        }
+
+        .box.deployment {
+            border-color: #8b5cf6;
+            background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+        }
+
+        .box.user {
+            border-color: #ef4444;
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        }
+
+        .box h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #1f2937;
+        }
+
+        .box p {
+            color: #6b7280;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .arrow {
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 20px solid #9ca3af;
+            margin: 10px 0;
+        }
+
+        .arrow.horizontal {
+            width: 0;
+            height: 0;
+            border-top: 15px solid transparent;
+            border-bottom: 15px solid transparent;
+            border-left: 20px solid #9ca3af;
+            margin: 0 10px;
+        }
+
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .tech-category {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .tech-category h4 {
+            font-size: 1.4rem;
+            color: #1f2937;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .tech-list {
+            list-style: none;
+        }
+
+        .tech-list li {
+            background: white;
+            margin: 8px 0;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tech-name {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .tech-purpose {
+            font-size: 0.85rem;
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        .data-flow {
+            background: #f1f5f9;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+
+        .step-description {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .layer {
+                flex-direction: column;
+            }
+            
+            .arrow.horizontal {
+                transform: rotate(90deg);
+            }
+            
+            .tech-stack {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏦 ExpenseFlow</h1>
+            <p>Complete Project Architecture & Technology Stack</p>
+        </div>
+
+        <div class="content">
+            <!-- Architecture Overview -->
+            <div class="section">
+                <h2 class="section-title">🏗️ System Architecture</h2>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); border: 2px solid #ef4444;"></div>
+                        <span>User Interface</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border: 2px solid #3b82f6;"></div>
+                        <span>Frontend</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border: 2px solid #10b981;"></div>
+                        <span>Backend</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 2px solid #f59e0b;"></div>
+                        <span>Database</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%); border: 2px solid #8b5cf6;"></div>
+                        <span>Deployment</span>
+                    </div>
+                </div>
+
+                <div class="flowchart">
+                    <!-- User Layer -->
+                    <div class="layer">
+                        <div class="box user">
+                            <h3>👤 Users</h3>
+                            <p>People who want to track their expenses, set budgets, and manage financial goals</p>
+                        </div>
+                    </div>
+
+                    <div class="arrow"></div>
+
+                    <!-- Frontend Layer -->
+                    <div class="layer">
+                        <div class="box frontend">
+                            <h3>💻 Web Browser</h3>
+                            <p>Chrome, Firefox, Safari, Edge - where users interact with the app</p>
+                        </div>
+                    </div>
+
+                    <div class="arrow"></div>
+
+                    <!-- Application Layer -->
+                    <div class="layer">
+                        <div class="box frontend">
+                            <h3>⚛️ React Application</h3>
+                            <p>Built with TypeScript, styled with Tailwind CSS, hosted on Netlify</p>
+                        </div>
+                    </div>
+
+                    <div class="arrow"></div>
+
+                    <!-- Backend Services -->
+                    <div class="layer">
+                        <div class="box backend">
+                            <h3>🔐 Supabase Auth</h3>
+                            <p>Handles user registration, login, and security</p>
+                        </div>
+                        <div class="arrow horizontal"></div>
+                        <div class="box backend">
+                            <h3>🔌 Supabase API</h3>
+                            <p>Provides real-time data access and updates</p>
+                        </div>
+                    </div>
+
+                    <div class="arrow"></div>
+
+                    <!-- Database Layer -->
+                    <div class="layer">
+                        <div class="box database">
+                            <h3>🗄️ PostgreSQL Database</h3>
+                            <p>Stores all user data: transactions, budgets, goals, and profiles</p>
+                        </div>
+                    </div>
+
+                    <div class="arrow"></div>
+
+                    <!-- Deployment Layer -->
+                    <div class="layer">
+                        <div class="box deployment">
+                            <h3>🌐 Netlify CDN</h3>
+                            <p>Global content delivery network for fast loading worldwide</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Flow -->
+            <div class="section">
+                <h2 class="section-title">🔄 How Data Flows</h2>
+                <div class="data-flow">
+                    <div class="flow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <div class="step-title">User Action</div>
+                            <div class="step-description">User adds an expense, creates a budget, or sets a goal in the web interface</div>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <div class="step-title">Frontend Processing</div>
+                            <div class="step-description">React app validates the data and formats it properly</div>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <div class="step-title">API Call</div>
+                            <div class="step-description">Data is sent to Supabase through secure API calls</div>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <div class="step-title">Authentication Check</div>
+                            <div class="step-description">Supabase verifies the user is logged in and authorized</div>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <div class="step-title">Database Update</div>
+                            <div class="step-description">PostgreSQL database stores the new information securely</div>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <div class="step-title">Real-time Update</div>
+                            <div class="step-description">All connected devices get the updated data instantly</div>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <div class="step-title">UI Refresh</div>
+                            <div class="step-description">The interface updates to show the new information immediately</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tech Stack Details -->
+            <div class="section">
+                <h2 class="section-title">🛠️ Technology Stack Breakdown</h2>
+                <div class="tech-stack">
+                    <div class="tech-category">
+                        <h4>🎨 Frontend (What Users See)</h4>
+                        <ul class="tech-list">
+                            <li>
+                                <span class="tech-name">React 18</span>
+                                <span class="tech-purpose">User interface framework</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">TypeScript</span>
+                                <span class="tech-purpose">Type-safe JavaScript</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">Tailwind CSS</span>
+                                <span class="tech-purpose">Beautiful styling</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">Lucide React</span>
+                                <span class="tech-purpose">Modern icons</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">Vite</span>
+                                <span class="tech-purpose">Fast development server</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="tech-category">
+                        <h4>⚙️ Backend (Behind the Scenes)</h4>
+                        <ul class="tech-list">
+                            <li>
+                                <span class="tech-name">Supabase</span>
+                                <span class="tech-purpose">Complete backend platform</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">PostgreSQL</span>
+                                <span class="tech-purpose">Reliable database</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">Row Level Security</span>
+                                <span class="tech-purpose">Data protection</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">Real-time API</span>
+                                <span class="tech-purpose">Instant updates</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">Authentication</span>
+                                <span class="tech-purpose">Secure user login</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="tech-category">
+                        <h4>🚀 Deployment & Hosting</h4>
+                        <ul class="tech-list">
+                            <li>
+                                <span class="tech-name">Netlify</span>
+                                <span class="tech-purpose">Web hosting platform</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">CDN</span>
+                                <span class="tech-purpose">Global content delivery</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">HTTPS</span>
+                                <span class="tech-purpose">Secure connections</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">Auto-deployment</span>
+                                <span class="tech-purpose">Automatic updates</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="tech-category">
+                        <h4>🔧 Development Tools</h4>
+                        <ul class="tech-list">
+                            <li>
+                                <span class="tech-name">ESLint</span>
+                                <span class="tech-purpose">Code quality checking</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">PostCSS</span>
+                                <span class="tech-purpose">CSS processing</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">Git</span>
+                                <span class="tech-purpose">Version control</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">npm</span>
+                                <span class="tech-purpose">Package management</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Overview -->
+            <div class="section">
+                <h2 class="section-title">✨ Key Features</h2>
+                <div class="tech-stack">
+                    <div class="tech-category">
+                        <h4>💰 Expense Tracking</h4>
+                        <ul class="tech-list">
+                            <li>
+                                <span class="tech-name">Add Transactions</span>
+                                <span class="tech-purpose">Record income & expenses</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">Categories</span>
+                                <span class="tech-purpose">Organize by type</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">Payment Methods</span>
+                                <span class="tech-purpose">Track how you paid</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">Tags</span>
+                                <span class="tech-purpose">Custom labels</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="tech-category">
+                        <h4>🎯 Budget Management</h4>
+                        <ul class="tech-list">
+                            <li>
+                                <span class="tech-name">Set Limits</span>
+                                <span class="tech-purpose">Monthly/weekly budgets</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">Track Spending</span>
+                                <span class="tech-purpose">Real-time progress</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">Alerts</span>
+                                <span class="tech-purpose">Overspending warnings</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">Visual Progress</span>
+                                <span class="tech-purpose">Progress bars & charts</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="tech-category">
+                        <h4>🏆 Goals & Savings</h4>
+                        <ul class="tech-list">
+                            <li>
+                                <span class="tech-name">Savings Goals</span>
+                                <span class="tech-purpose">Set financial targets</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">Progress Tracking</span>
+                                <span class="tech-purpose">Monitor achievements</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">Deadlines</span>
+                                <span class="tech-purpose">Time-based goals</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">Add Money</span>
+                                <span class="tech-purpose">Update progress</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="tech-category">
+                        <h4>📊 Reports & Analytics</h4>
+                        <ul class="tech-list">
+                            <li>
+                                <span class="tech-name">Dashboard</span>
+                                <span class="tech-purpose">Financial overview</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">Transaction History</span>
+                                <span class="tech-purpose">Complete records</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">Filtering</span>
+                                <span class="tech-purpose">Find specific data</span>
+                            </li>
+                            <li>
+                                <span class="tech-name">Monthly Stats</span>
+                                <span class="tech-purpose">Income vs expenses</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security & Performance -->
+            <div class="section">
+                <h2 class="section-title">🔒 Security & Performance</h2>
+                <div class="data-flow">
+                    <div class="flow-step">
+                        <div class="step-number">🔐</div>
+                        <div class="step-content">
+                            <div class="step-title">User Authentication</div>
+                            <div class="step-description">Secure email/password login with encrypted sessions</div>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-number">🛡️</div>
+                        <div class="step-content">
+                            <div class="step-title">Row Level Security</div>
+                            <div class="step-description">Users can only access their own data - complete privacy</div>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-number">⚡</div>
+                        <div class="step-content">
+                            <div class="step-title">Real-time Updates</div>
+                            <div class="step-description">Changes appear instantly across all devices</div>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-number">🌍</div>
+                        <div class="step-content">
+                            <div class="step-title">Global CDN</div>
+                            <div class="step-description">Fast loading times worldwide through Netlify's network</div>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-number">📱</div>
+                        <div class="step-content">
+                            <div class="step-title">Responsive Design</div>
+                            <div class="step-description">Works perfectly on phones, tablets, and computers</div>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="step-number">💾</div>
+                        <div class="step-content">
+                            <div class="step-title">Automatic Backups</div>
+                            <div class="step-description">Your data is safely backed up by Supabase</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
