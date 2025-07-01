@@ -31,7 +31,7 @@ function App() {
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
-        return <Dashboard />;
+        return <Dashboard onTabChange={setActiveTab} />;
       case 'add':
         return <ExpenseForm />;
       case 'budgets':
@@ -64,7 +64,7 @@ function App() {
           </div>
         );
       default:
-        return <Dashboard />;
+        return <Dashboard onTabChange={setActiveTab} />;
     }
   };
 

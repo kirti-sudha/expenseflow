@@ -15,7 +15,11 @@ import { useExpensesDB } from '../hooks/useExpensesDB';
 import { useAuth } from '../hooks/useAuth';
 import { formatIndianCurrency } from '../utils/currency';
 
-const Dashboard: React.FC = () => {
+interface DashboardProps {
+  onTabChange?: (tab: string) => void;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ onTabChange }) => {
   const { user } = useAuth();
   const { monthlyStats, budgets, transactions, categorySpending, loading, error } = useExpensesDB();
 
@@ -76,7 +80,10 @@ const Dashboard: React.FC = () => {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Add Your First Transaction</h3>
               <p className="text-gray-600 mb-4">Start by recording your income or expenses to begin tracking your finances.</p>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+              <button 
+                onClick={() => onTabChange?.('add')}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+              >
                 Add Transaction
               </button>
             </div>
@@ -87,7 +94,10 @@ const Dashboard: React.FC = () => {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Set Up Budgets</h3>
               <p className="text-gray-600 mb-4">Create monthly budgets for different categories to stay on track with your spending.</p>
-              <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+              <button 
+                onClick={() => onTabChange?.('budgets')}
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+              >
                 Create Budget
               </button>
             </div>
@@ -98,7 +108,10 @@ const Dashboard: React.FC = () => {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Track Your Goals</h3>
               <p className="text-gray-600 mb-4">Set savings goals and monitor your progress towards achieving them.</p>
-              <button className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-colors">
+              <button 
+                onClick={() => onTabChange?.('goals')}
+                className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+              >
                 Set Goals
               </button>
             </div>
@@ -248,7 +261,10 @@ const Dashboard: React.FC = () => {
               <div className="text-center py-8">
                 <Target className="mx-auto text-gray-400 mb-4" size={48} />
                 <p className="text-gray-500 mb-4">No budgets set up yet</p>
-                <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                <button 
+                  onClick={() => onTabChange?.('budgets')}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                >
                   Create Your First Budget
                 </button>
               </div>
@@ -298,7 +314,10 @@ const Dashboard: React.FC = () => {
               <div className="text-center py-8">
                 <CreditCard className="mx-auto text-gray-400 mb-4" size={48} />
                 <p className="text-gray-500 mb-4">No transactions yet</p>
-                <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                <button 
+                  onClick={() => onTabChange?.('add')}
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                >
                   Add Your First Transaction
                 </button>
               </div>
