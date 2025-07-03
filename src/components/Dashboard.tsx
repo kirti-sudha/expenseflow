@@ -154,23 +154,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onTabChange }) => {
               </div>
             </div>
           </div>
-
-          {/* Quick Tips */}
-          <div className="max-w-4xl mx-auto mt-16 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-8 border border-blue-100">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">💡 Quick Tips to Get Started</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-gray-700">
-              <div className="space-y-3">
-                <p>• Start by adding your regular income sources</p>
-                <p>• Record your daily expenses as they happen</p>
-                <p>• Set realistic budgets based on your spending history</p>
-              </div>
-              <div className="space-y-3">
-                <p>• Use categories to organize your transactions</p>
-                <p>• Review your spending weekly to stay on track</p>
-                <p>• Set up savings goals to stay motivated</p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     );
